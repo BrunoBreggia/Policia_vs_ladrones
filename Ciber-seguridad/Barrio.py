@@ -4,6 +4,7 @@ Created on Sat Apr  2 00:47:59 2022
 
 @author: Andres Venialgo
 """
+
 from constantes import * 
 class Barrio:
     
