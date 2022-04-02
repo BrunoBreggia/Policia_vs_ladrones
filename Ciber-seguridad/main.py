@@ -28,14 +28,14 @@ class Persona(ABC):
     
     def set_posicion(self, nueva_pos):
         self.posicion = nueva_pos
-    
+ 
     def mover_aleatorio(self):
         posicion_valida = False
         while not posicion_valida:
-            indice = np.random(0,8)
+            indice = np.random.randint(0,8)
             pos_rel = self.posiciones_relativas[indice]
-            pf = self.posicion[0]+ pos_rel
-            pc = self.posicion[1]+ pos_rel
+            pf = self.posicion[0] + pos_rel[0]
+            pc = self.posicion[1] + pos_rel[1]
             if (0 <= pf < FILAS_BARRIO) and (0 <= pc < COLUMNAS_BARRIO):
                posicion_valida = True
                self.posicion = [ self.posicion[0]+pos_rel[0],
