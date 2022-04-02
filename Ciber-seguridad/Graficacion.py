@@ -11,6 +11,11 @@ import matplotlib.animation as animation
 from Barrio import Barrio
 from constantes import *
 
+
+def actualizar(data):
+    mat.set_data(data)
+    return mat
+
 def data_gen():
     barrio = Barrio()
     fils, cols = FILAS_BARRIO, COLUMNAS_BARRIO
@@ -20,21 +25,23 @@ def data_gen():
         # Lo civiles se mostraran en blanco
         for civil in barrio.civiles:
             fil, col = civil.posicion
-            matriz[fil, col, :] = [0,0,1]
-        # Los mos se veran en tonalidades de rojo
-        for mo in mundo.mos:
-            if not mo.esta_muerto:
-                fil, col = mo.posicion
-                color = mo.energia/ENERGIA_MAX_MO
-                matriz[fil, col, :] = [color, 0, 0]
-        # avanzo epoca
-        mundo.vivir()
+            matriz[fil, col, :] = [1,1,1]
+        # # Los policias se veran en azul
+        # for pol in barrio.policias:
+        #     fil, col = pol.posicion
+        #     matriz[fil, col, :] = [0.3, 0.3, 1]
+        # # Los criminales se veran en rojo
+        # for criminal in barrio.criminales:
+        #     fil, col = criminal.posicion
+        #     matriz[fil, col, :] = [1,0,0]
+        # # avanzo epoca
+        barrio.vivir()
         # mundo.escribir_archivo("mini_evolucion.txt")
         # entrego matriz actual
         yield matriz
 
 fig, ax = plt.subplots()
-mat = ax.matshow(np.zeros((TAM_MUNDO, TAM_MUNDO, 3), np.float32))
+mat = ax.matshow(np.zeros((FILAS_BARRIO, COLUMNAS_BARRIO, 3), np.float32))
 ani = animation.FuncAnimation(fig, actualizar, data_gen, interval=10,
                               save_count=50)
 plt.show()
