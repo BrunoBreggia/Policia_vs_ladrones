@@ -12,9 +12,9 @@ from constantes import *
 class Persona(ABC):
     
     def __init__(self):
-        self.campo_de_vision = 1
+        self.campo_de_vision = 50
         self.energia = 0
-        self.posicion = [0, 0]
+        # self.posicion = [49, 49]
         self.posiciones_relativas = {
             0:[-1,0], 
             1:[-1,1],
@@ -42,43 +42,12 @@ class Persona(ABC):
                              self.posicion[1]+pos_rel[1] ]
                
     
-    def buscar(self, perseguidos):
-        pass
-    
-    # def mover(self, pos_x, pos_y):
-    #     self.posicion=[pos_x,pos_y]
-
-class Civil(Persona):
-    
-    def __init__(self):
-        super().__init__()
-        
-   
-             
-            
-class Policia(Persona):
-    def __init__(self):
-        super().__init__()
-        self.posicion = [np.random.randint(0,FILAS_BARRIO),
-                         np.random.randint(0,COLUMNAS_BARRIO)]        
-        
-    def buscar(self):
-        pass
-        
-
-class Criminal(Persona):
-    super().__init__()
-    self.posicion = [np.random.randint(0,FILAS_BARRIO),
-                     np.random.randint(0,COLUMNAS_BARRIO)]
-    
-    def mover(self, p_civiles):
-        busqueda = self.buscar(p_civiles)
-        if busqueda == None:
-            self.mover_aleatorio()
-        else:
-            self.posicion = busqueda # absoluta 
-            
-                
+    def matar(self, p_civiles):
+        for indice, civil in enumerate(p_civiles):
+            if civil.posicion == self.posicion:
+                p_civiles.pop(indice)
+                print(f"¡{type(civil).__name__} asesinado!")
+                break
         
     def buscar(self,p_civiles):
         respuesta = None
@@ -92,25 +61,128 @@ class Criminal(Persona):
             dx = self.posicion[0] - pf
             dy = self.posicion[1] - pc
             
-            if campo_de_vision >= abs(dx) and campo_de_vision >= abs(dy):
+            if self.campo_de_vision >= abs(dx) and self.campo_de_vision >= abs(dy):
                 
                 if abs(dx) < abs(civil_mas_cercano_x) and abs(dy) < abs(civil_mas_cercano_y):
                     if abs(dx) > abs(dy):
-                        pos_x = self.posicion[0] + dx/abs(dx)
+                        # print ("dx es mayor a dy")
+                        pos_x = self.posicion[0] - int(dx/abs(dx))
                         pos_y = self.posicion[1]
 
                     elif abs(dx) < abs(dy):
+                        # print ("dy es mayor a dx")
                         pos_x = self.posicion[0]
-                        pos_y = self.posicion[1] + dy/abs(dy)
+                        pos_y = self.posicion[1] - int(dy/abs(dy))
+                    elif abs(dx)==abs(dy) and dx == 0 :
+                        continue
                     else:
-                        pos_x = self.posicion[0] + dx/abs(dx)
-                        pos_y = self.posicion[1] + dy/abs(dy)
+                        # print ("dx==dy")
+                        pos_x = self.posicion[0] - int (dx/abs(dx))
+                        pos_y = self.posicion[1] - int (dy/abs(dy))
+                        
                     civil_mas_cercano_x = dx
                     civil_mas_cercano_y = dy
-                    
-                respuesta = [pos_x,pos_y]
+                    # if pos_x==FILAS_BARRIO or pos_y== COLUMNAS_BARRIO:
+                    #     print("ffffffffff")
+                    respuesta = [pos_x,pos_y]
                 
         return respuesta
+    
+    # def mover(self, pos_x, pos_y):
+    #     self.posicion=[pos_x,pos_y]
+
+class Civil(Persona):
+    
+    def __init__(self):
+        super().__init__()
+        self.posicion = [np.random.randint(0,FILAS_BARRIO),
+                          np.random.randint(0,COLUMNAS_BARRIO)]
+    
+    def mover(self):
+        self.mover_aleatorio()
+
+            
+class Policia(Persona):
+    def __init__(self):
+        super().__init__()
+        self.posicion = [np.random.randint(0,FILAS_BARRIO),
+                         np.random.randint(0,COLUMNAS_BARRIO)]        
+        
+    # def buscar(self):
+    #     pass
+
+    def mover(self, p_civiles):
+        busqueda = self.buscar(p_civiles)
+        if busqueda == None:
+            self.mover_aleatorio()
+        #     print ("mover aleatorio")
+        else:
+            self.posicion = busqueda
+            
+        self.matar(p_civiles)
+        
+
+class Criminal(Persona):
+    def __init__(self):
+        super().__init__()
+        self.posicion = [np.random.randint(0,FILAS_BARRIO),
+                          np.random.randint(0,COLUMNAS_BARRIO)]
+        
+    def mover(self, p_civiles):
+        busqueda = self.buscar(p_civiles)
+        if busqueda == None:
+            self.mover_aleatorio()
+        #     print ("mover aleatorio")
+        else:
+            self.posicion = busqueda
+            
+        self.matar(p_civiles)
+        
+    # def matar(self, p_civiles):
+    #     for indice, civil in enumerate(p_civiles):
+    #         if civil.posicion == self.posicion:
+    #             p_civiles.pop(indice)
+    #             print("[!] Civil asesinado")
+    #             break
+        
+    # def buscar(self,p_civiles):
+    #     respuesta = None
+    #     pos_x = self.posicion[0]
+    #     pos_y = self.posicion[1]
+    #     civil_mas_cercano_x = np.inf
+    #     civil_mas_cercano_y = np.inf
+    #     for civil in p_civiles:
+    #         pf = civil.posicion[0]
+    #         pc = civil.posicion[1]
+    #         dx = self.posicion[0] - pf
+    #         dy = self.posicion[1] - pc
+            
+    #         if self.campo_de_vision >= abs(dx) and self.campo_de_vision >= abs(dy):
+                
+    #             if abs(dx) < abs(civil_mas_cercano_x) and abs(dy) < abs(civil_mas_cercano_y):
+    #                 if abs(dx) > abs(dy):
+    #                     # print ("dx es mayor a dy")
+    #                     pos_x = self.posicion[0] - int(dx/abs(dx))
+    #                     pos_y = self.posicion[1]
+
+    #                 elif abs(dx) < abs(dy):
+    #                     # print ("dy es mayor a dx")
+    #                     pos_x = self.posicion[0]
+    #                     pos_y = self.posicion[1] - int(dy/abs(dy))
+    #                 elif abs(dx)==abs(dy) and dx == 0 :
+    #                     continue
+    #                 else:
+    #                     # print ("dx==dy")
+    #                     pos_x = self.posicion[0] - int (dx/abs(dx))
+    #                     pos_y = self.posicion[1] - int (dy/abs(dy))
+                        
+    #                 civil_mas_cercano_x = dx
+    #                 civil_mas_cercano_y = dy
+    #                 # if pos_x==FILAS_BARRIO or pos_y== COLUMNAS_BARRIO:
+    #                 #     print("ffffffffff")
+    #                 respuesta = [pos_x,pos_y]
+                
+    #     return respuesta
                     
                    
             

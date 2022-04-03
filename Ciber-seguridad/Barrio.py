@@ -12,16 +12,27 @@ class Barrio:
     
     def __init__(self):
         self.civiles = [Civil() for i in range(CIVILES_INICIALES)]
-        # self.policias = [Policia() for i in range(POLICIAS_INICIALES)]
-        # self.criminales = [Criminales() for i in range(CRIMINALES_INICIALES)]
+        self.policias = [Policia() for i in range(POLICIAS_INICIALES)]
+        self.criminales = [Criminal() for i in range(CRIMINALES_INICIALES)]
+        self.gameover = False
         
     def vivir(self):
+        if self.gameover:
+            return
+        
         for civil in self.civiles:
             civil.mover()
-        # for crminal in self.criminales:
-        #     criminal.mover()
-        # for policia in self.policias:
-        #     policia.mover()
+        for criminal in self.criminales:
+            criminal.mover(self.civiles)
+        for policia in self.policias:
+            policia.mover(self.criminales)
+        
+        if self.civiles == []:
+            print("GAME OVER: criminales ganan")
+            self.gameover = True
             
+        if self.criminales == []:
+            print("GAME OVER: policias ganan")
+            self.gameover = True
             
             
